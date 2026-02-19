@@ -1,0 +1,41 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "stop": "Home",
+        "scene": 0,
+        "label": "Start My Day"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-122.2509, 47.8490]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "stop": "Campus",
+        "scene": 1,
+        "label": "Classes"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-122.3032, 47.655548]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "stop": "Study Zone",
+        "scene": 2,
+        "label": "Study Session"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-122.3103636, 47.6564806]
+      }
+    }
+  ]
+}
