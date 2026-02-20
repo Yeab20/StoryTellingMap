@@ -1,4 +1,5 @@
-mapboxgl.accessToken = "pk.eyJ1IjoieWVhYjEiLCJhIjoiY21sdTJ6bHZwMDZ6aDNmcTI4YnJicjRqcCJ9.g17-uYOvAut4uxJ71G43Kg";
+mapboxgl.accessToken =
+  "pk.eyJ1IjoieWVhYjEiLCJhIjoiY21sdTJ6bHZwMDZ6aDNmcTI4YnJicjRqcCJ9.g17-uYOvAut4uxJ71G43Kg";
 
 const map = new mapboxgl.Map({
   container: "map",
@@ -11,7 +12,7 @@ const scroller = scrollama();
 
 async function loadGeoJSON(path) {
   const resp = await fetch(path);
-  if (!resp.ok) throw new Error(`Failed to load ${path}`);
+  if (!resp.ok) throw new Error(`Failed to load ${path} (HTTP ${resp.status})`);
   return await resp.json();
 }
 
@@ -21,8 +22,18 @@ function setBuildingsVisibility(isVisible) {
   if (map.getLayer("uwbuildings-outline")) map.setLayoutProperty("uwbuildings-outline", "visibility", v);
 }
 
+function fitToStops(stops) {
+  if (!stops || !stops.features || stops.features.length === 0) return;
+  const bounds = new mapboxgl.LngLatBounds();
+  for (const f of stops.features) {
+    if (f.geometry && f.geometry.type === "Point") {
+      bounds.extend(f.geometry.coordinates);
+    }
+  }
+  map.fitBounds(bounds, { padding: 80, duration: 800 });
+}
+
 async function main() {
-  // Load your local data files
   const stops = await loadGeoJSON("data/stops.geojson");
   const uwBuildings = await loadGeoJSON("data/uw_buildings.geojson");
 
@@ -34,16 +45,17 @@ async function main() {
     map.addSource("uwbuildings-src", { type: "geojson", data: uwBuildings });
 
     // -----------------------
-    // 2) ADD LAYERS
+    // 2) ADD LAYERS (VISIBLE STYLES)
     // -----------------------
 
-    // UW buildings layers (initially hidden; shown only on Scene 1 & 2)
+    // UW buildings (hidden first, shown on Scene 1 & 2)
     map.addLayer({
       id: "uwbuildings-fill",
       type: "fill",
       source: "uwbuildings-src",
       layout: { visibility: "none" },
       paint: {
+        "fill-color": "#6c757d",
         "fill-opacity": 0.25
       }
     });
@@ -54,7 +66,8 @@ async function main() {
       source: "uwbuildings-src",
       layout: { visibility: "none" },
       paint: {
-        "line-width": 1
+        "line-color": "#343a40",
+        "line-width": 1.5
       }
     });
 
@@ -64,7 +77,10 @@ async function main() {
       type: "circle",
       source: "stops-src",
       paint: {
-        "circle-radius": 7
+        "circle-radius": 8,
+        "circle-color": "#b31237",
+        "circle-stroke-color": "#ffffff",
+        "circle-stroke-width": 2
       }
     });
 
@@ -74,11 +90,30 @@ async function main() {
       source: "stops-src",
       layout: {
         "text-field": ["get", "label"],
-        "text-size": 12,
-        "text-offset": [0, 1.2],
+        "text-size": 14,
+        "text-offset": [0, 1.3],
         "text-anchor": "top"
+      },
+      paint: {
+        "text-color": "#111111",
+        "text-halo-color": "#ffffff",
+        "text-halo-width": 2
       }
     });
+
+    // Optional: click a stop to confirm it exists
+    map.on("click", "stops-circle", (e) => {
+      const props = e.features?.[0]?.properties || {};
+      const coords = e.features?.[0]?.geometry?.coordinates;
+
+      new mapboxgl.Popup()
+        .setLngLat(coords)
+        .setHTML(`<strong>${props.stop || props.name || "Stop"}</strong><br/>${props.label || ""}`)
+        .addTo(map);
+    });
+
+    // DEBUG/HELPFUL: zoom to your stops so you can’t miss them
+    fitToStops(stops);
 
     // -----------------------
     // 3) SCROLLAMA SETUP
@@ -162,4 +197,7 @@ function handleStepExit(response) {
   }
 }
 
-main().catch(err => console.error(err));
+main().catch((err) => {
+  console.error(err);
+  alert(err.message);
+});
