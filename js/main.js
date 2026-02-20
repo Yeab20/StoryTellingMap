@@ -15,6 +15,12 @@ async function loadGeoJSON(path) {
   return await resp.json();
 }
 
+function setBuildingsVisibility(isVisible) {
+  const v = isVisible ? "visible" : "none";
+  if (map.getLayer("uwbuildings-fill")) map.setLayoutProperty("uwbuildings-fill", "visibility", v);
+  if (map.getLayer("uwbuildings-outline")) map.setLayoutProperty("uwbuildings-outline", "visibility", v);
+}
+
 async function main() {
   // Load your local data files
   const stops = await loadGeoJSON("data/stops.geojson");
@@ -29,8 +35,9 @@ async function main() {
 
     // -----------------------
     // 2) ADD LAYERS
-    // Buildings (initially hidden)
     // -----------------------
+
+    // UW buildings layers (initially hidden; shown only on Scene 1 & 2)
     map.addLayer({
       id: "uwbuildings-fill",
       type: "fill",
@@ -89,12 +96,6 @@ async function main() {
   });
 }
 
-function setBuildingsVisibility(isVisible) {
-  const v = isVisible ? "visible" : "none";
-  if (map.getLayer("uwbuildings-fill")) map.setLayoutProperty("uwbuildings-fill", "visibility", v);
-  if (map.getLayer("uwbuildings-outline")) map.setLayoutProperty("uwbuildings-outline", "visibility", v);
-}
-
 function handleStepEnter(response) {
   const i = response.index;
 
@@ -151,11 +152,14 @@ function handleStepEnter(response) {
 function handleStepExit(response) {
   const i = response.index;
 
-  // Show cover again if scrolling up past Scene 0
-  if (i === 0 && response.direction === "up") {
-    document.getElementById("cover").style.visibility = "visible";
+  // When leaving Scene 0:
+  if (i === 0) {
+    if (response.direction === "down") {
+      document.getElementById("cover").style.visibility = "hidden";
+    } else {
+      document.getElementById("cover").style.visibility = "visible";
+    }
   }
 }
 
 main().catch(err => console.error(err));
-
