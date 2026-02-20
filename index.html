@@ -19,6 +19,7 @@
 </head>
 
 <body>
+
   <!-- COVER -->
   <section id="cover">
     <div id="intro">
@@ -28,5 +29,54 @@
         This storymap follows my typical day starting in Lynnwood, traveling to the
         University of Washington for classes, then ending at Odegaard Library for a study session.
       </p>
-      <div class="foot
+      <div class="footnote">
+        <span>GEOG 458 • Lab 07 • Yeabkal Shewangezaw</span>
+      </div>
+    </div>
+  </section>
 
+  <!-- GEONARRATIVE -->
+  <section id="geonarrative">
+    <div id="storyboard">
+      <div id="map"></div>
+    </div>
+
+    <article class="scene" data-scene="0">
+      <h2>1) Start My Day</h2>
+      <p>I start in Lynnwood and head toward UW.</p>
+      <!-- Optional image (put file in img/ then uncomment) -->
+      <!-- <img src="img/commute.jpg" alt="Commute" /> -->
+    </article>
+
+    <article class="scene" data-scene="1">
+      <h2>2) Classes</h2>
+      <p>I arrive on campus for classes and move through the core UW area.</p>
+      <!-- <img src="img/campus.jpg" alt="Campus" /> -->
+    </article>
+
+    <article class="scene" data-scene="2">
+      <h2>3) Study Session</h2>
+      <p>I finish at Odegaard Library and lock in to study.</p>
+      <!-- <img src="img/study.jpg" alt="Study" /> -->
+    </article>
+
+    <article class="scene" data-scene="3">
+      <h2>Wrap Up</h2>
+      <p>That’s my UW routine: commute → campus → study spot.</p>
+    </article>
+  </section>
+
+  <!-- FOOTER (optional but nice) -->
+  <section id="footer">
+    <div class="footer-inner">
+      <p><strong>Live Site:</strong> https://Yeab20.github.io/StoryTellingMap/</p>
+      <p><strong>Data:</strong> stops.geojson + uw_buildings.geojson (downloaded from OpenStreetMap via Overpass Turbo)</p>
+      <p><strong>Tools:</strong> Mapbox GL JS + Scrollama</p>
+    </div>
+  </section>
+
+  <!-- Your JS (must be at the end) -->
+  <script src="js/main.js"></script>
+
+</body>
+</html>
